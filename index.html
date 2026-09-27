@@ -1,0 +1,708 @@
+<title>Preventivi Imbianchino</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --bg:#F7F5F1;
+  --surface:#FFFFFF;
+  --ink:#262320;
+  --ink-soft:#6B6459;
+  --line:#E4DFD6;
+  --accent:#2F5D62;
+  --accent-soft:#E4EEEC;
+  --accent-ink:#1D3F42;
+  --danger:#A23B2E;
+  --danger-soft:#F5E7E3;
+  --shadow: 0 1px 2px rgba(38,35,32,.06), 0 4px 16px rgba(38,35,32,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1C1A17;
+    --surface:#252220;
+    --ink:#F2EFE9;
+    --ink-soft:#B4AB9D;
+    --line:#3A362F;
+    --accent:#7FC2C1;
+    --accent-soft:#24403F;
+    --accent-ink:#CFEEEC;
+    --danger:#E5917C;
+    --danger-soft:#3D2A25;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 20px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1C1A17;
+  --surface:#252220;
+  --ink:#F2EFE9;
+  --ink-soft:#B4AB9D;
+  --line:#3A362F;
+  --accent:#7FC2C1;
+  --accent-soft:#24403F;
+  --accent-ink:#CFEEEC;
+  --danger:#E5917C;
+  --danger-soft:#3D2A25;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 20px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-inline:16px;
+  padding-block:24px 120px;
+}
+h1,h2,h3{text-wrap:balance; margin:0;}
+.wrap{max-width:640px; margin:0 auto; display:flex; flex-direction:column; gap:24px;}
+
+.masthead{display:flex; flex-direction:column; gap:4px;}
+.masthead .kicker{
+  font-size:.75rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--accent);
+}
+.masthead h1{font-size:1.5rem; font-weight:700;}
+.masthead p{margin:0; color:var(--ink-soft); font-size:.9rem;}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  display:flex; flex-direction:column; gap:14px;
+}
+.card h2{
+  font-size:.7rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--ink-soft);
+}
+
+.grid2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px;}
+@media(max-width:420px){.grid2{grid-template-columns:minmax(0,1fr);}}
+
+label{display:flex; flex-direction:column; gap:4px; font-size:.85rem; color:var(--ink-soft); font-weight:500; min-width:0;}
+input[type=text],input[type=number],input[type=date],input[type=tel],textarea,select{
+  font:inherit;
+  font-size:1rem;
+  color:var(--ink);
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:10px 12px;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  min-height:44px;
+}
+textarea{min-height:60px; resize:vertical; font-family:inherit;}
+input:focus,textarea:focus,select:focus,button:focus-visible{
+  outline:2px solid var(--accent); outline-offset:1px;
+}
+
+.chiprow{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{
+  font:inherit; font-size:.82rem; font-weight:500;
+  background:var(--accent-soft); color:var(--accent-ink);
+  border:1px solid transparent; border-radius:999px;
+  padding:8px 14px; cursor:pointer;
+}
+.chip:hover{border-color:var(--accent);}
+
+.item{
+  border:1px solid var(--line); border-radius:12px; padding:12px;
+  display:flex; flex-direction:column; gap:10px; background:var(--bg);
+}
+.item-top{display:flex; gap:8px; align-items:flex-start;}
+.item-top input[type=text]{flex:1;}
+.item-fields{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px;}
+@media(max-width:420px){.item-fields{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.item-fields label{font-size:.72rem;}
+.item-total{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.85rem; color:var(--ink-soft); padding-top:2px; border-top:1px dashed var(--line);
+}
+.item-total strong{color:var(--ink); font-variant-numeric:tabular-nums; font-size:1rem;}
+
+.icon-btn{
+  border:none; background:transparent; color:var(--danger); cursor:pointer;
+  width:32px; height:32px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; line-height:1;
+}
+.icon-btn:hover{background:var(--danger-soft);}
+
+.add-row{
+  border:1.5px dashed var(--line); background:transparent; color:var(--ink-soft);
+  border-radius:10px; padding:12px; font:inherit; font-weight:600; font-size:.9rem;
+  cursor:pointer;
+}
+.add-row:hover{border-color:var(--accent); color:var(--accent-ink);}
+
+.check-row{display:flex; align-items:center; gap:8px; font-size:.9rem;}
+.check-row input{width:18px; height:18px;}
+
+.totals{display:flex; flex-direction:column; gap:8px; font-size:.9rem;}
+.totals .row{display:flex; justify-content:space-between; color:var(--ink-soft);}
+.totals .row span:last-child{font-variant-numeric:tabular-nums; color:var(--ink);}
+.totals .row.grand{
+  border-top:1px solid var(--line); padding-top:10px; margin-top:2px;
+  font-size:1.15rem; font-weight:700; color:var(--ink);
+}
+.totals .row.grand span:last-child{color:var(--accent-ink); font-size:1.3rem;}
+
+.bar{
+  position:fixed; left:0; right:0; bottom:0;
+  background:var(--surface); border-top:1px solid var(--line);
+  padding:12px 16px; box-shadow:0 -4px 16px rgba(0,0,0,.08);
+  display:flex; align-items:center; gap:12px; z-index:10;
+}
+.bar .total-mini{flex:1; min-width:0;}
+.bar .total-mini .lbl{font-size:.68rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.06em;}
+.bar .total-mini .val{font-size:1.25rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--accent-ink);}
+.btn-primary{
+  font:inherit; font-weight:700; font-size:.95rem;
+  background:var(--accent); color:var(--surface);
+  border:none; border-radius:10px; padding:14px 20px;
+  cursor:pointer; white-space:nowrap;
+}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-ghost{
+  font:inherit; font-weight:600; font-size:.85rem;
+  background:transparent; color:var(--ink-soft); border:1px solid var(--line);
+  border-radius:9px; padding:10px 14px; cursor:pointer; white-space:nowrap;
+}
+.btn-ghost:hover{color:var(--ink); border-color:var(--ink-soft);}
+
+.hint{
+  font-size:.8rem; color:var(--ink-soft); background:var(--accent-soft); color:var(--accent-ink);
+  border-radius:9px; padding:8px 12px; display:inline-block;
+}
+
+/* --- on-screen preview overlay, doubles as the printable document --- */
+.preview-overlay{
+  position:fixed; inset:0; background:var(--bg); z-index:50;
+  overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:12px 12px 48px;
+}
+.preview-overlay[hidden]{display:none;}
+.preview-bar{
+  position:sticky; top:0; display:flex; flex-wrap:wrap; gap:8px;
+  background:var(--bg); padding-block:2px 10px; margin-bottom:8px;
+}
+.preview-bar .btn-ghost{flex:1 1 auto;}
+
+.howto{
+  max-width:720px; margin:0 auto 14px; font-size:.85rem; line-height:1.5;
+  background:var(--accent-soft); color:var(--accent-ink);
+  border-radius:10px; padding:12px 14px;
+}
+.howto strong{display:block; margin-bottom:2px;}
+
+.doc-actions{
+  max-width:720px; margin:0 auto 14px; display:flex; flex-wrap:wrap; gap:10px;
+}
+.doc-actions .btn-primary, .doc-actions .btn-ghost{flex:1 1 auto; min-width:160px;}
+
+.print-doc{
+  font-family:"Source Serif 4",Georgia,serif; color:#1a1a1a; background:#fff;
+  max-width:720px; width:100%; margin:0 auto; padding:24px 18px;
+  border-radius:10px; box-shadow:var(--shadow);
+}
+.pd-head{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px 16px; border-bottom:2px solid #1a1a1a; padding-bottom:14px; margin-bottom:18px;}
+.pd-head .biz{font-size:1.2rem; font-weight:700; word-break:break-word;}
+.pd-head .meta{font-size:.82rem; line-height:1.5; margin-top:4px;}
+.pd-title{text-align:left;}
+.pd-title .doc{font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:#555;}
+.pd-title .num{font-size:1.05rem; font-weight:700;}
+.pd-title .date{font-size:.82rem; color:#555;}
+.pd-client{margin-bottom:18px; font-size:.88rem; line-height:1.6; word-break:break-word;}
+.pd-client .lbl{font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:#555;}
+.pd-table-wrap{overflow-x:auto; margin-bottom:16px; -webkit-overflow-scrolling:touch;}
+table.pd-table{width:100%; min-width:420px; border-collapse:collapse; font-size:.85rem;}
+table.pd-table th{
+  text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em;
+  color:#555; border-bottom:1.5px solid #1a1a1a; padding:6px 6px; white-space:nowrap;
+}
+table.pd-table td{border-bottom:1px solid #ccc; padding:8px 6px; vertical-align:top;}
+table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap;}
+.pd-totals{width:280px; max-width:100%; margin-left:auto; font-size:.88rem; margin-bottom:24px;}
+.pd-totals .row{display:flex; justify-content:space-between; padding:4px 0; gap:8px;}
+.pd-totals .row.grand{border-top:2px solid #1a1a1a; margin-top:4px; padding-top:8px; font-weight:700; font-size:1.1rem;}
+.pd-note{font-size:.8rem; color:#444; margin-bottom:24px; white-space:pre-wrap;}
+.pd-foot{display:flex; justify-content:space-between; gap:16px; font-size:.8rem; color:#444; margin-top:32px; flex-wrap:wrap;}
+.pd-sign{border-top:1px solid #1a1a1a; padding-top:6px; width:180px; text-align:center;}
+@media(max-width:420px){
+  .print-doc{padding:18px 14px;}
+  .pd-title{text-align:left; width:100%;}
+  .pd-totals{width:100%;}
+}
+
+@media print{
+  body{padding:0; background:#fff;}
+  .app, .no-print{display:none !important;}
+  .preview-overlay{position:static; inset:auto; padding:0; background:#fff; overflow:visible;}
+  .print-doc{box-shadow:none; border-radius:0; padding:0; max-width:none; margin:0;}
+  @page{margin:1.6cm;}
+}
+</style>
+
+<div class="app wrap">
+  <div class="masthead">
+    <span class="kicker">Generatore preventivi</span>
+    <h1>Preventivi in cantiere</h1>
+    <p>Compila i dati, aggiungi le voci di lavoro e stampa il documento pronto per il cliente.</p>
+    <span class="hint">📱 Consiglio: apri questo link dal cellulare e aggiungilo alla schermata Home per usarlo come un'app.</span>
+  </div>
+
+  <div class="card">
+    <h2>I tuoi dati</h2>
+    <div class="grid2">
+      <label>Nome / ragione sociale
+        <input type="text" id="bizName" value="Pittura Bianchi">
+      </label>
+      <label>Telefono
+        <input type="tel" id="bizPhone" value="335 123 4567">
+      </label>
+      <label>Indirizzo
+        <input type="text" id="bizAddress" value="Via dei Colori 12, Bergamo">
+      </label>
+      <label>P.IVA (facoltativa)
+        <input type="text" id="bizVat" value="">
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Dati cliente</h2>
+    <div class="grid2">
+      <label>Cliente
+        <input type="text" id="cliName" value="Famiglia Rossi">
+      </label>
+      <label>Indirizzo lavoro
+        <input type="text" id="cliAddress" value="Via Roma 8, Bergamo">
+      </label>
+    </div>
+    <div class="grid2">
+      <label>Numero preventivo
+        <input type="text" id="quoteNum">
+      </label>
+      <label>Data
+        <input type="date" id="quoteDate">
+      </label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Voci di lavoro</h2>
+    <div class="chiprow" id="chips"></div>
+    <div id="items"></div>
+    <button class="add-row" id="addItem" type="button">+ Aggiungi voce personalizzata</button>
+  </div>
+
+  <div class="card">
+    <h2>Riepilogo</h2>
+    <div class="grid2">
+      <label>Sconto (%)
+        <input type="number" id="discount" value="0" min="0" max="100" step="1">
+      </label>
+      <label>Validità offerta (giorni)
+        <input type="number" id="validity" value="15" min="1" step="1">
+      </label>
+    </div>
+    <div class="check-row">
+      <input type="checkbox" id="applyVat">
+      <label for="applyVat" style="font-size:.9rem; color:var(--ink);">Applica IVA</label>
+      <input type="number" id="vatRate" value="22" min="0" max="100" step="1" style="width:70px; margin-left:auto;">
+      <span style="color:var(--ink-soft); font-size:.9rem;">%</span>
+    </div>
+    <label>Note per il cliente
+      <textarea id="note">Il prezzo include manodopera e materiali. Ponteggi/trabattelli esclusi salvo diverso accordo.</textarea>
+    </label>
+    <div class="totals" id="totals"></div>
+  </div>
+</div>
+
+<div class="bar app">
+  <div class="total-mini">
+    <div class="lbl">Totale preventivo</div>
+    <div class="val" id="barTotal">€ 0,00</div>
+  </div>
+  <button class="btn-primary" id="printBtn" type="button">Genera anteprima documento</button>
+</div>
+
+<!-- preview overlay: shows the finished document on screen and doubles as the print layout -->
+<div class="preview-overlay" id="previewOverlay" hidden>
+  <div class="preview-bar no-print">
+    <button class="btn-ghost" id="closePreview" type="button">← Torna al modulo</button>
+  </div>
+  <div class="howto no-print">
+    <strong>Per stampare o salvare in PDF</strong>
+    Apri il menu del browser — su iPhone l'icona <em>Condividi</em>, su Android i tre puntini ⋮ — e scegli <em>Stampa</em>. Il documento qui sotto è già pronto: nella schermata di stampa puoi scegliere "Salva in PDF" invece di una stampante fisica.
+  </div>
+  <div class="doc-actions no-print">
+    <button class="btn-primary" id="doPrint" type="button">🖨️ Prova stampa automatica</button>
+    <button class="btn-ghost" id="copyText" type="button">📋 Copia testo (per WhatsApp/Email)</button>
+  </div>
+  <p class="no-print" id="printFallback" style="display:none; max-width:720px; margin:0 auto 12px; font-size:.85rem; color:var(--ink-soft); background:var(--accent-soft); padding:10px 14px; border-radius:9px;"></p>
+  <div class="print-doc" id="printDoc"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CATALOG = [
+    {label:"Tinteggiatura pareti", desc:"Tinteggiatura pareti con pittura lavabile (2 mani)", unit:"mq", price:8},
+    {label:"Tinteggiatura soffitto", desc:"Tinteggiatura soffitto con pittura traspirante (2 mani)", unit:"mq", price:7},
+    {label:"Stuccatura crepe", desc:"Stuccatura e rasatura crepe superficiali", unit:"mq", price:12},
+    {label:"Rasatura a civile", desc:"Rasatura a civile fondo liscio", unit:"mq", price:16},
+    {label:"Verniciatura infissi", desc:"Verniciatura infissi/porte interne a smalto", unit:"pz", price:45},
+    {label:"Protezione ambienti", desc:"Protezione pavimenti, mobili e infissi", unit:"corpo forfait", price:80},
+    {label:"Ponteggio/trabattello", desc:"Nolo e montaggio trabattello per altezze", unit:"corpo forfait", price:120},
+    {label:"Smontaggio punti luce", desc:"Smontaggio e rimontaggio corpi illuminanti", unit:"pz", price:15}
+  ];
+
+  var els = {};
+  ["bizName","bizPhone","bizAddress","bizVat","cliName","cliAddress","quoteNum","quoteDate",
+   "discount","validity","applyVat","vatRate","note","items","chips","totals","barTotal","printDoc",
+   "previewOverlay","closePreview","doPrint","printFallback","copyText"
+  ].forEach(function(id){ els[id] = document.getElementById(id); });
+
+  var items = [];
+  var itemSeq = 0;
+
+  function eur(n){
+    return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(n||0);
+  }
+
+  function loadBiz(){
+    try{
+      var saved = JSON.parse(localStorage.getItem("preventivi_biz")||"null");
+      if(saved){
+        els.bizName.value = saved.name || els.bizName.value;
+        els.bizPhone.value = saved.phone || els.bizPhone.value;
+        els.bizAddress.value = saved.address || els.bizAddress.value;
+        els.bizVat.value = saved.vat || els.bizVat.value;
+      }
+    }catch(e){}
+  }
+  function saveBiz(){
+    try{
+      localStorage.setItem("preventivi_biz", JSON.stringify({
+        name: els.bizName.value, phone: els.bizPhone.value,
+        address: els.bizAddress.value, vat: els.bizVat.value
+      }));
+    }catch(e){}
+  }
+
+  function nextQuoteNumber(){
+    try{
+      var year = new Date().getFullYear();
+      var key = "preventivi_counter_"+year;
+      var n = parseInt(localStorage.getItem(key)||"0",10) + 1;
+      localStorage.setItem(key, String(n));
+      return year+"-"+String(n).padStart(3,"0");
+    }catch(e){ return "PREV-1"; }
+  }
+
+  function addItem(data){
+    itemSeq++;
+    items.push({
+      id: itemSeq,
+      desc: data && data.desc || "",
+      unit: data && data.unit || "mq",
+      qty: data && data.qty != null ? data.qty : 1,
+      price: data && data.price != null ? data.price : 0
+    });
+    render();
+  }
+
+  function removeItem(id){
+    items = items.filter(function(it){ return it.id !== id; });
+    render();
+  }
+
+  function renderChips(){
+    els.chips.innerHTML = "";
+    CATALOG.forEach(function(c){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = "+ " + c.label;
+      b.addEventListener("click", function(){
+        addItem({desc:c.desc, unit:c.unit, qty:1, price:c.price});
+      });
+      els.chips.appendChild(b);
+    });
+  }
+
+  function renderItems(){
+    els.items.innerHTML = "";
+    items.forEach(function(it){
+      var row = document.createElement("div");
+      row.className = "item";
+
+      var top = document.createElement("div");
+      top.className = "item-top";
+      var descInput = document.createElement("input");
+      descInput.type = "text";
+      descInput.value = it.desc;
+      descInput.placeholder = "Descrizione voce di lavoro";
+      descInput.addEventListener("input", function(){ it.desc = descInput.value; updateTotals(); });
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "icon-btn";
+      delBtn.setAttribute("aria-label","Rimuovi voce");
+      delBtn.textContent = "✕";
+      delBtn.addEventListener("click", function(){ removeItem(it.id); });
+      top.appendChild(descInput);
+      top.appendChild(delBtn);
+
+      var fields = document.createElement("div");
+      fields.className = "item-fields";
+
+      var qtyLabel = document.createElement("label");
+      qtyLabel.textContent = "Quantità";
+      var qtyInput = document.createElement("input");
+      qtyInput.type = "number"; qtyInput.min = "0"; qtyInput.step = "0.5";
+      qtyInput.value = it.qty;
+      qtyInput.addEventListener("input", function(){ it.qty = parseFloat(qtyInput.value)||0; updateTotals(); });
+      qtyLabel.appendChild(qtyInput);
+
+      var unitLabel = document.createElement("label");
+      unitLabel.textContent = "Unità";
+      var unitSelect = document.createElement("select");
+      ["mq","ml","pz","corpo forfait","h"].forEach(function(u){
+        var opt = document.createElement("option");
+        opt.value = u; opt.textContent = u;
+        if(u === it.unit) opt.selected = true;
+        unitSelect.appendChild(opt);
+      });
+      unitSelect.addEventListener("change", function(){ it.unit = unitSelect.value; updateTotals(); });
+      unitLabel.appendChild(unitSelect);
+
+      var priceLabel = document.createElement("label");
+      priceLabel.textContent = "Prezzo unit. €";
+      var priceInput = document.createElement("input");
+      priceInput.type = "number"; priceInput.min = "0"; priceInput.step = "0.5";
+      priceInput.value = it.price;
+      priceInput.addEventListener("input", function(){ it.price = parseFloat(priceInput.value)||0; updateTotals(); });
+      priceLabel.appendChild(priceInput);
+
+      fields.appendChild(qtyLabel);
+      fields.appendChild(unitLabel);
+      fields.appendChild(priceLabel);
+
+      var totalRow = document.createElement("div");
+      totalRow.className = "item-total";
+      var lbl = document.createElement("span");
+      lbl.textContent = "Totale voce";
+      var val = document.createElement("strong");
+      val.textContent = eur(it.qty * it.price);
+      totalRow.appendChild(lbl);
+      totalRow.appendChild(val);
+      row._totalEl = val;
+
+      row.appendChild(top);
+      row.appendChild(fields);
+      row.appendChild(totalRow);
+      els.items.appendChild(row);
+    });
+  }
+
+  function computeTotals(){
+    var subtotal = items.reduce(function(s,it){ return s + it.qty*it.price; }, 0);
+    var discountPct = parseFloat(els.discount.value)||0;
+    var discountAmt = subtotal * discountPct/100;
+    var afterDiscount = subtotal - discountAmt;
+    var vatOn = els.applyVat.checked;
+    var vatRate = parseFloat(els.vatRate.value)||0;
+    var vatAmt = vatOn ? afterDiscount * vatRate/100 : 0;
+    var grand = afterDiscount + vatAmt;
+    return {subtotal:subtotal, discountAmt:discountAmt, afterDiscount:afterDiscount, vatOn:vatOn, vatRate:vatRate, vatAmt:vatAmt, grand:grand};
+  }
+
+  function renderTotals(){
+    var t = computeTotals();
+    els.totals.innerHTML = "";
+    function row(label, value, cls){
+      var r = document.createElement("div");
+      r.className = "row" + (cls? " "+cls : "");
+      var a = document.createElement("span"); a.textContent = label;
+      var b = document.createElement("span"); b.textContent = value;
+      r.appendChild(a); r.appendChild(b);
+      els.totals.appendChild(r);
+    }
+    row("Subtotale", eur(t.subtotal));
+    if(t.discountAmt > 0) row("Sconto ("+(parseFloat(els.discount.value)||0)+"%)", "− " + eur(t.discountAmt));
+    row(t.vatOn ? "Imponibile" : "Totale (IVA non applicata)", eur(t.afterDiscount));
+    if(t.vatOn) row("IVA ("+t.vatRate+"%)", eur(t.vatAmt));
+    row("Totale preventivo", eur(t.grand), "grand");
+    els.barTotal.textContent = eur(t.grand);
+  }
+
+  function updateTotals(){
+    items.forEach(function(it){}); // items updated in place via handlers
+    Array.prototype.forEach.call(els.items.children, function(rowEl, i){
+      var it = items[i];
+      if(it && rowEl._totalEl) rowEl._totalEl.textContent = eur(it.qty*it.price);
+    });
+    renderTotals();
+    saveBiz();
+  }
+
+  function render(){
+    renderItems();
+    renderTotals();
+  }
+
+  function buildPrintDoc(){
+    var t = computeTotals();
+    var rowsHtml = items.map(function(it){
+      return "<tr><td>"+escapeHtml(it.desc||"—")+"</td>"+
+        "<td class='num'>"+ (it.qty%1===0? it.qty : it.qty.toFixed(2)) +" "+escapeHtml(it.unit)+"</td>"+
+        "<td class='num'>"+eur(it.price)+"</td>"+
+        "<td class='num'>"+eur(it.qty*it.price)+"</td></tr>";
+    }).join("");
+
+    var vatLine = t.vatOn
+      ? "<div class='row'><span>IVA ("+t.vatRate+"%)</span><span>"+eur(t.vatAmt)+"</span></div>"
+      : "<div class='row'><span style='font-size:.78rem;'>IVA non esposta ai sensi dell'art. 1, commi 54-89, L. 190/2014 (regime forfettario)</span><span></span></div>";
+
+    var discountLine = t.discountAmt > 0
+      ? "<div class='row'><span>Sconto ("+(parseFloat(els.discount.value)||0)+"%)</span><span>− "+eur(t.discountAmt)+"</span></div>"
+      : "";
+
+    var validity = parseInt(els.validity.value,10)||15;
+    var dateVal = els.quoteDate.value ? new Date(els.quoteDate.value) : new Date();
+    var dateStr = dateVal.toLocaleDateString("it-IT",{day:"2-digit",month:"long",year:"numeric"});
+
+    els.printDoc.innerHTML =
+      "<div class='pd-head'>"+
+        "<div>"+
+          "<div class='biz'>"+escapeHtml(els.bizName.value)+"</div>"+
+          "<div class='meta'>"+
+            (els.bizAddress.value? escapeHtml(els.bizAddress.value)+"<br>" : "")+
+            (els.bizPhone.value? "Tel. "+escapeHtml(els.bizPhone.value) : "")+
+            (els.bizVat.value? " · P.IVA "+escapeHtml(els.bizVat.value) : "")+
+          "</div>"+
+        "</div>"+
+        "<div class='pd-title'>"+
+          "<div class='doc'>Preventivo</div>"+
+          "<div class='num'>N. "+escapeHtml(els.quoteNum.value)+"</div>"+
+          "<div class='date'>"+dateStr+"</div>"+
+        "</div>"+
+      "</div>"+
+      "<div class='pd-client'>"+
+        "<span class='lbl'>Spett.le</span><br>"+
+        "<strong>"+escapeHtml(els.cliName.value)+"</strong><br>"+
+        escapeHtml(els.cliAddress.value)+
+      "</div>"+
+      "<div class='pd-table-wrap'><table class='pd-table'><thead><tr>"+
+        "<th>Descrizione lavoro</th><th class='num'>Quantità</th><th class='num'>Prezzo unit.</th><th class='num'>Importo</th>"+
+      "</tr></thead><tbody>"+rowsHtml+"</tbody></table></div>"+
+      "<div class='pd-totals'>"+
+        "<div class='row'><span>Subtotale</span><span>"+eur(t.subtotal)+"</span></div>"+
+        discountLine+
+        vatLine+
+        "<div class='row grand'><span>Totale</span><span>"+eur(t.grand)+"</span></div>"+
+      "</div>"+
+      (els.note.value? "<div class='pd-note'>"+escapeHtml(els.note.value)+"</div>" : "")+
+      "<div class='pd-foot'>"+
+        "<span>Preventivo valido "+validity+" giorni dalla data di emissione.</span>"+
+        "<span class='pd-sign'>Firma per accettazione</span>"+
+      "</div>";
+  }
+
+  function buildPrintText(){
+    var t = computeTotals();
+    var validity = parseInt(els.validity.value,10)||15;
+    var dateVal = els.quoteDate.value ? new Date(els.quoteDate.value) : new Date();
+    var dateStr = dateVal.toLocaleDateString("it-IT",{day:"2-digit",month:"long",year:"numeric"});
+    var lines = [];
+    lines.push(els.bizName.value);
+    if(els.bizAddress.value) lines.push(els.bizAddress.value);
+    if(els.bizPhone.value) lines.push("Tel. "+els.bizPhone.value);
+    lines.push("");
+    lines.push("PREVENTIVO N. "+els.quoteNum.value+" — "+dateStr);
+    lines.push("Cliente: "+els.cliName.value+" — "+els.cliAddress.value);
+    lines.push("");
+    items.forEach(function(it){
+      var qtyStr = (it.qty%1===0? it.qty : it.qty.toFixed(2)) + " " + it.unit;
+      lines.push("• "+(it.desc||"—")+" — "+qtyStr+" x "+eur(it.price)+" = "+eur(it.qty*it.price));
+    });
+    lines.push("");
+    lines.push("Subtotale: "+eur(t.subtotal));
+    if(t.discountAmt > 0) lines.push("Sconto: − "+eur(t.discountAmt));
+    if(t.vatOn) lines.push("IVA ("+t.vatRate+"%): "+eur(t.vatAmt));
+    else lines.push("IVA non esposta (regime forfettario)");
+    lines.push("TOTALE: "+eur(t.grand));
+    lines.push("");
+    if(els.note.value) lines.push(els.note.value);
+    lines.push("Preventivo valido "+validity+" giorni dalla data di emissione.");
+    return lines.join("\n");
+  }
+
+  function copyPreventivo(){
+    var text = buildPrintText();
+    var done = function(ok){
+      els.printFallback.style.display = "block";
+      els.printFallback.textContent = ok
+        ? "Testo copiato! Ora puoi incollarlo (tieni premuto → Incolla) in WhatsApp, Email o Note."
+        : "Non sono riuscito a copiare automaticamente. Tieni premuto sul testo del documento qui sotto per selezionarlo e copiarlo a mano.";
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
+    }else{
+      try{
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        done(ok);
+      }catch(e){ done(false); }
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s==null?"":s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  els.addItem = document.getElementById("addItem");
+  els.addItem.addEventListener("click", function(){ addItem({desc:"", unit:"mq", qty:1, price:0}); });
+
+  els.printBtn = document.getElementById("printBtn");
+  els.printBtn.addEventListener("click", function(){
+    buildPrintDoc();
+    els.previewOverlay.hidden = false;
+    els.previewOverlay.scrollTop = 0;
+  });
+  els.closePreview.addEventListener("click", function(){ els.previewOverlay.hidden = true; });
+  els.doPrint.addEventListener("click", function(){
+    try{
+      window.print();
+    }catch(e){
+      els.printFallback.style.display = "block";
+      els.printFallback.textContent = "Stampa automatica non disponibile qui. Usa il menu del browser (⋮ o Condividi) e scegli \"Stampa\" per salvare il documento in PDF.";
+    }
+  });
+  els.copyText.addEventListener("click", copyPreventivo);
+
+  [els.discount, els.validity, els.applyVat, els.vatRate, els.bizName, els.bizPhone, els.bizAddress, els.bizVat]
+    .forEach(function(el){ el.addEventListener("input", updateTotals); el.addEventListener("change", updateTotals); });
+
+  loadBiz();
+  els.quoteNum.value = nextQuoteNumber();
+  els.quoteDate.value = new Date().toISOString().slice(0,10);
+  renderChips();
+  addItem({desc:"Tinteggiatura pareti con pittura lavabile (2 mani)", unit:"mq", qty:60, price:8});
+  addItem({desc:"Tinteggiatura soffitto con pittura traspirante (2 mani)", unit:"mq", qty:22, price:7});
+  addItem({desc:"Protezione pavimenti, mobili e infissi", unit:"corpo forfait", qty:1, price:80});
+  render();
+})();
+</script>
