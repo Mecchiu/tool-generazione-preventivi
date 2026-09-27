@@ -76,6 +76,15 @@ h1,h2,h3{text-wrap:balance; margin:0;}
   color:var(--ink-soft);
 }
 
+/* mobile: edge-to-edge cards, no outer page gutter, everything scaled up a notch */
+@media (max-width:480px){
+  html{font-size:17px;}
+  body{padding-inline:0; padding-block:20px 130px;}
+  .wrap{gap:14px;}
+  .masthead{padding-inline:16px; gap:6px;}
+  .card{border-radius:0; border-left:none; border-right:none; padding:18px 16px;}
+}
+
 .grid2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px;}
 @media(max-width:420px){.grid2{grid-template-columns:minmax(0,1fr);}}
 
