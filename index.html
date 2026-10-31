@@ -230,6 +230,7 @@ input:focus,textarea:focus,select:focus,button:focus-visible{
 .pd-title .date{font-size:.82rem; color:#555;}
 .pd-client{margin-bottom:18px; font-size:.88rem; line-height:1.6; word-break:break-word;}
 .pd-client .lbl{font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:#555;}
+.pd-subject{margin-bottom:12px; font-size:1.05rem; font-weight:700; word-break:break-word;}
 .pd-table-wrap{overflow-x:auto; margin-bottom:16px; -webkit-overflow-scrolling:touch;}
 table.pd-table{width:100%; min-width:420px; border-collapse:collapse; font-size:.85rem;}
 table.pd-table th{
@@ -309,6 +310,9 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
 
   <div class="card">
     <h2>Voci di lavoro</h2>
+    <label>Titolo del preventivo (facoltativo)
+      <input type="text" id="quoteTitle" placeholder="Es. Tinteggiatura appartamento">
+    </label>
     <div class="chiprow" id="chips"></div>
     <div id="items"></div>
     <button class="add-row" id="addItem" type="button">+ Aggiungi voce personalizzata</button>
@@ -378,7 +382,7 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
   ];
 
   var els = {};
-  ["bizName","bizPhone","bizAddress","bizVat","cliName","cliAddress","quoteNum","quoteDate",
+  ["bizName","bizPhone","bizAddress","bizVat","cliName","cliAddress","quoteTitle","quoteNum","quoteDate",
    "discount","validity","applyVat","vatRate","note","items","chips","totals","barTotal","printDoc",
    "previewOverlay","closePreview","doPrint","printFallback","copyText"
   ].forEach(function(id){ els[id] = document.getElementById(id); });
@@ -390,23 +394,34 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
     return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(n||0);
   }
 
-  function loadBiz(){
+  // Campi di testo/numero salvati nella bozza. Numero e data preventivo sono esclusi: si rigenerano a ogni apertura.
+  var DRAFT_FIELDS = ["bizName","bizPhone","bizAddress","bizVat","cliName","cliAddress","quoteTitle",
+                      "discount","validity","vatRate","note"];
+
+  // Ritorna true se ha ripristinato anche le voci di lavoro.
+  function loadDraft(){
     try{
-      var saved = JSON.parse(localStorage.getItem("preventivi_biz")||"null");
-      if(saved){
-        els.bizName.value = saved.name || els.bizName.value;
-        els.bizPhone.value = saved.phone || els.bizPhone.value;
-        els.bizAddress.value = saved.address || els.bizAddress.value;
-        els.bizVat.value = saved.vat || els.bizVat.value;
+      var saved = JSON.parse(localStorage.getItem("preventivi_draft")||"null");
+      if(!saved) return false;
+      DRAFT_FIELDS.forEach(function(id){
+        if(saved[id] != null) els[id].value = saved[id];
+      });
+      if(saved.applyVat != null) els.applyVat.checked = !!saved.applyVat;
+      if(Array.isArray(saved.items)){
+        saved.items.forEach(function(it){
+          itemSeq++;
+          items.push({id:itemSeq, desc:it.desc||"", unit:it.unit||"mq", qty:+it.qty||0, price:+it.price||0});
+        });
+        return true;
       }
     }catch(e){}
+    return false;
   }
-  function saveBiz(){
+  function saveDraft(){
     try{
-      localStorage.setItem("preventivi_biz", JSON.stringify({
-        name: els.bizName.value, phone: els.bizPhone.value,
-        address: els.bizAddress.value, vat: els.bizVat.value
-      }));
+      var draft = {applyVat: els.applyVat.checked, items: items};
+      DRAFT_FIELDS.forEach(function(id){ draft[id] = els[id].value; });
+      localStorage.setItem("preventivi_draft", JSON.stringify(draft));
     }catch(e){}
   }
 
@@ -563,12 +578,13 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
       if(it && rowEl._totalEl) rowEl._totalEl.textContent = eur(it.qty*it.price);
     });
     renderTotals();
-    saveBiz();
+    saveDraft();
   }
 
   function render(){
     renderItems();
     renderTotals();
+    saveDraft();
   }
 
   function buildPrintDoc(){
@@ -613,6 +629,7 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
         "<strong>"+escapeHtml(els.cliName.value)+"</strong><br>"+
         escapeHtml(els.cliAddress.value)+
       "</div>"+
+      (els.quoteTitle.value.trim()? "<div class='pd-subject'>"+escapeHtml(els.quoteTitle.value.trim())+"</div>" : "")+
       "<div class='pd-table-wrap'><table class='pd-table'><thead><tr>"+
         "<th>Descrizione lavoro</th><th class='num'>Quantità</th><th class='num'>Prezzo unit.</th><th class='num'>Importo</th>"+
       "</tr></thead><tbody>"+rowsHtml+"</tbody></table></div>"+
@@ -642,6 +659,10 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
     lines.push("PREVENTIVO N. "+els.quoteNum.value+" — "+dateStr);
     lines.push("Cliente: "+els.cliName.value+" — "+els.cliAddress.value);
     lines.push("");
+    if(els.quoteTitle.value.trim()){
+      lines.push(els.quoteTitle.value.trim());
+      lines.push("");
+    }
     items.forEach(function(it){
       var qtyStr = (it.qty%1===0? it.qty : it.qty.toFixed(2)) + " " + it.unit;
       lines.push("• "+(it.desc||"—")+" — "+qtyStr+" x "+eur(it.price)+" = "+eur(it.qty*it.price));
@@ -709,16 +730,20 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
   });
   els.copyText.addEventListener("click", copyPreventivo);
 
-  [els.discount, els.validity, els.applyVat, els.vatRate, els.bizName, els.bizPhone, els.bizAddress, els.bizVat]
-    .forEach(function(el){ el.addEventListener("input", updateTotals); el.addEventListener("change", updateTotals); });
+  DRAFT_FIELDS.concat(["applyVat"]).forEach(function(id){
+    els[id].addEventListener("input", updateTotals);
+    els[id].addEventListener("change", updateTotals);
+  });
 
-  loadBiz();
+  var restoredItems = loadDraft();
   els.quoteNum.value = nextQuoteNumber();
   els.quoteDate.value = new Date().toISOString().slice(0,10);
   renderChips();
-  addItem({desc:"Tinteggiatura pareti con pittura lavabile (2 mani)", unit:"mq", qty:60, price:8});
-  addItem({desc:"Tinteggiatura soffitto con pittura traspirante (2 mani)", unit:"mq", qty:22, price:7});
-  addItem({desc:"Protezione pavimenti, mobili e infissi", unit:"corpo forfait", qty:1, price:80});
+  if(!restoredItems){
+    addItem({desc:"Tinteggiatura pareti con pittura lavabile (2 mani)", unit:"mq", qty:60, price:8});
+    addItem({desc:"Tinteggiatura soffitto con pittura traspirante (2 mani)", unit:"mq", qty:22, price:7});
+    addItem({desc:"Protezione pavimenti, mobili e infissi", unit:"corpo forfait", qty:1, price:80});
+  }
   render();
 })();
 </script>
