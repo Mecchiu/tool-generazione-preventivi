@@ -255,8 +255,10 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
   body{padding:0; background:#fff;}
   .app, .no-print{display:none !important;}
   .preview-overlay{position:static; inset:auto; padding:0; background:#fff; overflow:visible;}
-  .print-doc{box-shadow:none; border-radius:0; padding:0; max-width:none; margin:0;}
-  @page{margin:1.6cm;}
+  /* margine di pagina a 0 così il browser non stampa intestazione/piè di pagina (titolo sito, URL, data);
+     il margine vero lo dà il padding del documento */
+  .print-doc{box-shadow:none; border-radius:0; padding:1.6cm; max-width:none; margin:0;}
+  @page{margin:0;}
 }
 </style>
 </head>
@@ -729,6 +731,14 @@ table.pd-table td.num, table.pd-table th.num{text-align:right; font-variant-nume
     }
   });
   els.copyText.addEventListener("click", copyPreventivo);
+
+  // durante la stampa il titolo della pagina diventa il nome file proposto per il PDF
+  var pageTitle = document.title;
+  window.addEventListener("beforeprint", function(){
+    var parts = ["Preventivo", els.quoteNum.value, els.cliName.value].filter(Boolean);
+    document.title = parts.join(" - ");
+  });
+  window.addEventListener("afterprint", function(){ document.title = pageTitle; });
 
   DRAFT_FIELDS.concat(["applyVat"]).forEach(function(id){
     els[id].addEventListener("input", updateTotals);
